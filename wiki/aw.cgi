@@ -39,8 +39,9 @@ def readablePageName(page):
     processed = processed + page[i]
   return processed
 
-def skeleton(title, body):
-  print("<html><head><title>" + str(title) + "</title></head>")
+def skeleton(title, body, simplemde=False):
+  print("<html><head><title>" + str(title) + "</title>" + ('<link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">\
+         <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>' if simplemde else "") + "</head>")
   print("<body>")
   print(body)
   print("</body></html>")
@@ -66,9 +67,12 @@ def shipEditor(page):
            """<h3>{formatPageName}</h3>
               <a href="aw.cgi?page={pageName}">Abort Edit: Back to {formatPageName}</a>
               <form method="post" action="aw.cgi?page={pageName}">
-               <textarea name="newtext" cols="80" rows="24" wrap="virtual">{text}</textarea><br>
+               <textarea id="newtext" name="newtext" cols="80" rows="24" wrap="virtual">{text}</textarea><br>
                <input type="submit" value="Save Changes">
-              </form>""".format(pageName=page, formatPageName=readablePageName(page), text=text))
+              </form>
+              <script>
+                var simplemde = new SimpleMDE({{ element: document.getElementById("newtext") }});
+              </script>""".format(pageName=page, formatPageName=readablePageName(page), text=text), True)
 
 def shipPage(page):
   text = markdown2.markdown(readPage(page), extras=["link-patterns", "fenced-code-blocks"], link_patterns=[(re_validPageName, r"aw.cgi?page=\1")])
