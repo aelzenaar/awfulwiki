@@ -39,12 +39,22 @@ def readablePageName(page):
     processed = processed + page[i]
   return processed
 
-def skeleton(title, body, simplemde=False):
-  print("<html><head><title>" + str(title) + "</title>" + ('<link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">\
-         <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>' if simplemde else "") + "</head>")
-  print("<body>")
-  print(body)
-  print("</body></html>")
+def skeleton(title, body, add_simplemde=False):
+  mathjax   = """
+              <script type="text/x-mathjax-config">
+                MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]} });
+              </script>
+              <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+              """
+  simplemde = """
+              <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+              <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+              """
+
+  print("<html><head><title>{title}</title>{mathjax}{simplemde}</head><body>{body}</body></html>".format(title=title,
+                                                                                                        body=body,
+                                                                                                        mathjax=mathjax,
+                                                                                                        simplemde=(simplemde if add_simplemde else "")))
 
 def readPage(page):
   if not(pageExists(page)):

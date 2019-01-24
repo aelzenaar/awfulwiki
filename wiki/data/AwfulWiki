@@ -1,3 +1,7 @@
 This is AwfulWiki. It is an awful piece of wiki software. The code is on [github](https://github.com/aelzenaar/awfulwiki).
 
 It is to some degree a clone of the [WikiWikiWeb](http://wiki.c2.com/?"""WikiWikiWeb""").
+
+This software also embeds [MathJax](https://www.mathjax.org/). For example,
+
+$\displaystyle x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a} $.
