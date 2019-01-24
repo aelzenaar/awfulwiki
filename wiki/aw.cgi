@@ -21,12 +21,15 @@ import cgitb
 cgitb.enable()
 
 from pathlib import Path
+import re
 
 import markdown2
+import pygments
 
 # See http://wiki.c2.com/?JoinCapitalizedWords
+re_validPageName = re.compile(r"(\b[A-Z][a-z]+[A-Z]\w+\b)")
 def validPageName(page):
-  return True if (page.isalpha() and page[0].isupper() and page[1:].lower() != page[1:]) else False
+  return False if re_validPageName.fullmatch(page) == None else True
 
 def readablePageName(page):
   processed = page[0]
@@ -68,7 +71,7 @@ def shipEditor(page):
               </form>""".format(pageName=page, formatPageName=readablePageName(page), text=text))
 
 def shipPage(page):
-  text = markdown2.markdown(readPage(page))
+  text = markdown2.markdown(readPage(page), extras=["link-patterns", "fenced-code-blocks"], link_patterns=[(re_validPageName, r"aw.cgi?page=\1")])
 
   skeleton(readablePageName(page),
            """<h3>{formatPageName}</h3>
@@ -83,7 +86,6 @@ def shipPage(page):
 ###
 
 print("Content-Type: text/html")
-print()
 
 form = cgi.FieldStorage()
 
@@ -91,6 +93,11 @@ if "page" not in form:
   page = "MainPage"
 else:
   page = form["page"].value
+  if not validPageName(page):
+    print("Status: 400 Bad Request")
+    print()
+    print("<html><head><title>400 Bad Request</title></head><body><h3>400 Bad Request</h3><p>The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).<p>In particular, the page title was not valid.<p><a href=\"aw.cgi\">Home</a></body></html>")
+    quit()
 
 if "newtext" in form:
   writePage(page, form["newtext"].value)
@@ -98,6 +105,8 @@ if "newtext" in form:
 do_edit = False
 if ("edit" in form and str(form["edit"].value) == "1") or not(pageExists(page)):
   do_edit = True
+
+print()
 
 if(do_edit):
   shipEditor(page)
