@@ -5,6 +5,6 @@
 
 if [ -e thttpd.pid ]
 then
-  kill $(cat thttpd.pid)
+  kill -USR1 $(cat thttpd.pid)
   rm thttpd.pid
 fi
