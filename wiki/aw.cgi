@@ -24,6 +24,18 @@ from pathlib import Path
 
 import markdown2
 
+# See http://wiki.c2.com/?JoinCapitalizedWords
+def validPageName(page):
+  return True if (page.isalpha() and page[0].isupper() and page[1:].lower() != page[1:]) else False
+
+def readablePageName(page):
+  processed = page[0]
+  for i in range(1,len(page)):
+    if(page[i].isupper()):
+      processed = processed + " "
+    processed = processed + page[i]
+  return processed
+
 def skeleton(title, body):
   print("<html><head><title>" + str(title) + "</title></head>")
   print("<body>")
@@ -47,14 +59,23 @@ def pageExists(page):
 
 def shipEditor(page):
   text = readPage(page)
-  skeleton(str(page) + " (editing)", "<h3>" + str(page) + "</h3>\n\n<a href=\"aw.cgi?page="+str(page)+"\">Abort Edit: Back to "+str(page)+"</a>\
-           <form method=\"post\" action=\"aw.cgi?page="+str(page)+"\">\
-             <textarea name=\"newtext\" cols=\"80\" rows=\"24\" wrap=\"virtual\">"+text+"</textarea><br>\
-             <input type=\"submit\" value=\"Save Changes\">\
-           </form>")
+  skeleton(readablePageName(page) + " (editing)",
+           """<h3>{formatPageName}</h3>
+              <a href="aw.cgi?page={pageName}">Abort Edit: Back to {formatPageName}</a>
+              <form method="post" action="aw.cgi?page={pageName}">
+               <textarea name="newtext" cols="80" rows="24" wrap="virtual">{text}</textarea><br>
+               <input type="submit" value="Save Changes">
+              </form>""".format(pageName=page, formatPageName=readablePageName(page), text=text))
 
 def shipPage(page):
-  skeleton(str(page), "<h3>"+str(page)+"</h3>\n\n"+markdown2.markdown(readPage(page))+"\n\n<p><a href=\"aw.cgi?page="+str(page)+"&edit=1\">Edit</a>")
+  text = markdown2.markdown(readPage(page))
+
+  skeleton(readablePageName(page),
+           """<h3>{formatPageName}</h3>
+              {text}
+
+              <p><a href="aw.cgi?page={pageName}&edit=1">Edit</a>
+           """.format(pageName=page, formatPageName=readablePageName(page), text=text))
 
 
 ###
