@@ -77,7 +77,7 @@ def shipPage(page):
            """<h3>{formatPageName}</h3>
               {text}
 
-              <p><a href="aw.cgi?page={pageName}&edit=1">Edit</a>
+              <p><a href="aw.cgi?page={pageName}&edit=1">Edit</a>&nbsp;<a href="aw.cgi?page=MainPage">Home</a>
            """.format(pageName=page, formatPageName=readablePageName(page), text=text))
 
 
