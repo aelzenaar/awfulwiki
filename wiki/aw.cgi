@@ -22,6 +22,8 @@ cgitb.enable()
 
 from pathlib import Path
 
+import markdown2
+
 def skeleton(title, body):
   print("<html><head><title>" + str(title) + "</title></head>")
   print("<body>")
@@ -52,7 +54,7 @@ def shipEditor(page):
            </form>")
 
 def shipPage(page):
-  skeleton(str(page), "<h3>"+str(page)+"</h3>\n\n"+readPage(page)+"\n\n<p><a href=\"aw.cgi?page="+str(page)+"&edit=1\">Edit</a>")
+  skeleton(str(page), "<h3>"+str(page)+"</h3>\n\n"+markdown2.markdown(readPage(page))+"\n\n<p><a href=\"aw.cgi?page="+str(page)+"&edit=1\">Edit</a>")
 
 
 ###
