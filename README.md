@@ -7,6 +7,7 @@ This piece of software is a nasty hacked together semi-clone of [WikiWikiWeb](ht
  * Full markdown support.
  * Automatic WikiLinks.
  * MathJax support.
+ * Replace page content with `!delete` to delete pages.
 
 ## Features this software doesn't have
 

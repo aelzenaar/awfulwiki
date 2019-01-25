@@ -65,8 +65,13 @@ def readPage(page):
   return content
 
 def writePage(page, text):
+  if(text == "!delete"):
+    (Path("data")/str(page)).unlink()
+    return False
+
   with (Path("data")/str(page)).open('w') as f:
     f.write(text)
+  return True
 
 def pageExists(page):
   return (Path("data")/str(page)).exists()
@@ -114,7 +119,10 @@ else:
     quit()
 
 if "newtext" in form:
-  writePage(page, form["newtext"].value)
+  if not writePage(page, form["newtext"].value):
+    print("Status: 303 See Other")
+    print("Location: aw.cgi?page=MainPage")
+    quit()
 
 do_edit = False
 if ("edit" in form and str(form["edit"].value) == "1") or not(pageExists(page)):
