@@ -7,7 +7,6 @@ This piece of software is a nasty hacked together semi-clone of [WikiWikiWeb](ht
  * Full markdown support.
  * Automatic WikiLinks.
  * MathJax support.
- * Replace page content with `!delete` to delete pages.
 
 ## Features this software doesn't have
 
@@ -21,3 +20,4 @@ This piece of software is a nasty hacked together semi-clone of [WikiWikiWeb](ht
    easier can be found [in my fork](https://github.com/aelzenaar/python-markdown2).
  * **Pretty text editing.** AwfulWiki embeds [SimpleMDE](https://github.com/sparksuite/simplemde-markdown-editor). It need not be installed locally.
  * **LaTeX support.** AwfulWiki embeds [MathJax](https://www.mathjax.org/). It need not be installed locally.
+ * **PDF generation.** You need [pypandoc](https://pypi.org/project/pypandoc/) installed locally.

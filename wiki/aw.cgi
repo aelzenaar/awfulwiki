@@ -28,8 +28,13 @@ import cgitb
 from pathlib import Path
 import re
 import os
+import tempfile
+import shutil
+import sys
+import datetime
 
 import markdown2
+import pypandoc
 
 cgitb.enable()
 
@@ -106,6 +111,9 @@ def pageExists(page):
 def shipEditor(page):
   """ Return an HTML response with an editor for the given page. """
 
+  print("Content-Type: text/html")
+  print()
+
   text = readPage(page)
   skeleton(readablePageName(page) + " (editing)",
            """<h3>{formatPageName}</h3>
@@ -123,6 +131,9 @@ def shipPage(page):
       processing necessary (e.g. markdown)
   """
 
+  print("Content-Type: text/html")
+  print()
+
   text = markdown2.markdown(readPage(page),
                             extras=["link-patterns", "fenced-code-blocks"],
                             link_patterns=[(re_validPageName, r"{me}?page=\1".format(me=myUrl()))])
@@ -131,17 +142,25 @@ def shipPage(page):
            """<h3>{formatPageName}</h3>
               {text}
 
-              <p><a href="{me}?page={pageName}&edit=1">Edit</a>&nbsp;<a href="{me}?page=MainPage">Home</a>
+              <p><a href="{me}?page={pageName}&pdf=1">PDF</a>&nbsp;<a href="{me}?page={pageName}&edit=1">Edit</a>&nbsp;<a href="{me}?page=MainPage">Home</a>
            """.format(me=myUrl(), pageName=page, formatPageName=readablePageName(page), text=text))
 
+def shipPDF(page):
+  print("Content-Type: application/pdf\n\n")
+  sys.stdout.flush()
+  filename = tempfile.mkstemp('.pdf')[1]
+  pypandoc.convert_text("# " + readablePageName(page) + "\nRetrieved " + datetime.datetime.now(datetime.timezone.utc).strftime("%d %B %Y (%Z) @ %H:%M:%S")
+                             + "\n\n---\n" + readPage(page), 'pdf', format='md', outputfile=filename)
+  with open(filename, 'rb') as f:
+    shutil.copyfileobj(f, sys.stdout.buffer)
+
+  Path(filename).unlink()
 
 ###
 ### Main
 ###
 def main():
   """ Request entry point. """
-  print("Content-Type: text/html")
-
   form = cgi.FieldStorage()
 
   if "page" not in form:
@@ -149,6 +168,7 @@ def main():
   else:
     page = form["page"].value
     if not validPageName(page):
+      print("Content-Type: text/html")
       print("Status: 400 Bad Request")
       print()
       print("""<html><head><title>400 Bad Request</title></head><body>
@@ -169,7 +189,9 @@ def main():
   if ("edit" in form and str(form["edit"].value) == "1") or not pageExists(page):
     do_edit = True
 
-  print()
+  if "pdf" in form and str(form["pdf"].value) == "1" and do_edit is False:
+    shipPDF(page)
+    quit()
 
   if do_edit:
     shipEditor(page)
