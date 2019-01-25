@@ -22,6 +22,7 @@ cgitb.enable()
 
 from pathlib import Path
 import re
+import os
 
 import markdown2
 import pygments
@@ -33,6 +34,9 @@ def validPageName(page):
 
 def realPagePath(page):
   return Path("data")/page
+
+def myUrl():
+  return os.environ['SCRIPT_NAME']
 
 def readablePageName(page):
   processed = page[0]
@@ -83,24 +87,24 @@ def shipEditor(page):
   text = readPage(page)
   skeleton(readablePageName(page) + " (editing)",
            """<h3>{formatPageName}</h3>
-              <a href="aw.cgi?page={pageName}">Abort Edit: Back to {formatPageName}</a>
-              <form method="post" action="aw.cgi?page={pageName}">
+              <a href="{me}?page={pageName}">Abort Edit: Back to {formatPageName}</a>
+              <form method="post" action="{me}?page={pageName}">
                <textarea id="newtext" name="newtext" cols="80" rows="24" wrap="virtual">{text}</textarea><br>
                <input type="submit" value="Save Changes">
               </form>
               <script>
                 var simplemde = new SimpleMDE({{ element: document.getElementById("newtext") }});
-              </script>""".format(pageName=page, formatPageName=readablePageName(page), text=text), True)
+              </script>""".format(me=myUrl(), pageName=page, formatPageName=readablePageName(page), text=text), True)
 
 def shipPage(page):
-  text = markdown2.markdown(readPage(page), extras=["link-patterns", "fenced-code-blocks"], link_patterns=[(re_validPageName, r"aw.cgi?page=\1")])
+  text = markdown2.markdown(readPage(page), extras=["link-patterns", "fenced-code-blocks"], link_patterns=[(re_validPageName, r"{me}?page=\1".format(me=myUrl()))])
 
   skeleton(readablePageName(page),
            """<h3>{formatPageName}</h3>
               {text}
 
-              <p><a href="aw.cgi?page={pageName}&edit=1">Edit</a>&nbsp;<a href="aw.cgi?page=MainPage">Home</a>
-           """.format(pageName=page, formatPageName=readablePageName(page), text=text))
+              <p><a href="{me}?page={pageName}&edit=1">Edit</a>&nbsp;<a href="{me}?page=MainPage">Home</a>
+           """.format(me=myUrl(), pageName=page, formatPageName=readablePageName(page), text=text))
 
 
 ###
@@ -118,13 +122,13 @@ else:
   if not validPageName(page):
     print("Status: 400 Bad Request")
     print()
-    print("<html><head><title>400 Bad Request</title></head><body><h3>400 Bad Request</h3><p>The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).<p>In particular, the page title was not valid.<p><a href=\"aw.cgi\">Home</a></body></html>")
+    print("<html><head><title>400 Bad Request</title></head><body><h3>400 Bad Request</h3><p>The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).<p>In particular, the page title was not valid.<p><a href=\"{me}\">Home</a></body></html>".format(me=myUrl()))
     quit()
 
 if "newtext" in form:
   if not writePage(page, form["newtext"].value):
     print("Status: 303 See Other")
-    print("Location: aw.cgi?page=MainPage")
+    print("Location: {me}?page=MainPage".format(me=myUrl()))
     quit()
 
 do_edit = False
