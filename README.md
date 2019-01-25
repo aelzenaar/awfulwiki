@@ -7,6 +7,7 @@ This piece of software is a nasty hacked together semi-clone of [WikiWikiWeb](ht
  * Full markdown support.
  * Automatic WikiLinks.
  * MathJax support.
+ * PDF generation for every page, using pandoc. (For LaTeX formulae, there must be no spaces immediately inside the dollar signs.)
 
 ## Features this software doesn't have
 

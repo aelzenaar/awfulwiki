@@ -4,4 +4,4 @@ It is to some degree a clone of the [WikiWikiWeb](http://wiki.c2.com/?"""WikiWik
 
 This software also embeds [MathJax](https://www.mathjax.org/). For example,
 
-$\displaystyle x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a} $.
+$\displaystyle x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$.
