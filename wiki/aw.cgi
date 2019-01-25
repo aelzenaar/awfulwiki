@@ -31,6 +31,9 @@ re_validPageName = re.compile(r"(\b[A-Z][a-z]+[A-Z]\w+\b)")
 def validPageName(page):
   return False if re_validPageName.fullmatch(page) == None else True
 
+def realPagePath(page):
+  return Path("data")/page
+
 def readablePageName(page):
   processed = page[0]
   for i in range(1,len(page)):
@@ -60,21 +63,21 @@ def readPage(page):
   if not(pageExists(page)):
     return ""
 
-  with (Path("data")/str(page)).open() as f:
+  with realPagePath(page).open() as f:
     content = f.read()
   return content
 
 def writePage(page, text):
   if(text == "!delete"):
-    (Path("data")/str(page)).unlink()
+    realPagePath(page).unlink()
     return False
 
-  with (Path("data")/str(page)).open('w') as f:
+  with realPagePath(page).open('w') as f:
     f.write(text)
   return True
 
 def pageExists(page):
-  return (Path("data")/str(page)).exists()
+  return realPagePath(page).exists()
 
 def shipEditor(page):
   text = readPage(page)
